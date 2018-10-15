@@ -1,3 +1,4 @@
+#include <errno.h>
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -17,7 +18,7 @@ int main(int argc, char const *argv[]){
 
   // Create socket
   if((sckt = socket(PF_INET, SOCK_STREAM, 0)) < 0){
-    printf("Socket Creation Failed.");
+    printf("There was an error trying to create the socket.\n %s \n", strerror(errno));
   }
 
   // Assign server address value
@@ -28,12 +29,12 @@ int main(int argc, char const *argv[]){
 
   // Assign  a port to socket w/ bind
   if(bind(sckt,  (struct sockaddr *)&ServAddr, sizeof(ServAddr)) < 0){
-    printf("Socket binding failed.");
+    printf("There was an error when trying to assign a port to the socket. \n %s \n", strerror(errno));
   }
 
   // Tell system to allow for connections with Listen
   if (listen(sckt, MAXPENDING) < 0){
-    printf("Socket connection listen failed.");
+    printf("There was an error when trying to allow the server to listen..\n %s \n", strerror(errno));
   }
 
   //

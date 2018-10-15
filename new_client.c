@@ -1,16 +1,17 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include <arpa/inet.h>
+#include <errno.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
-#include "netinet/in.h"
+#include <unistd.h>
 
 
 int main(int argc, char const *argv[]) {
-  int server_ip[6];
   unsigned short server_port;
   int sckt;
-  int err;
-  char * svr_ip = argv[1];
+  const char * svr_ip = argv[1];
 
   // // Get '.' Deliminated Server IP
   // char *  token = strtok(argv[1], ".");
@@ -37,8 +38,8 @@ int main(int argc, char const *argv[]) {
   server_address.sin_addr.s_addr = inet_addr(svr_ip);
 
   // Make a Connection to the server
-  if(connect(sckt, &server_address, sizeof(struct sockaddr_in)) < 0) {
-    printf("Error Number:%d\n", err);
+  if(connect(sckt,(struct sockaddr *) &server_address, sizeof(struct sockaddr_in)) < 0) {
+    printf("There was an error when trying to connect with the server.\n %s \n", strerror(errno));
   }
 
   // Communicate using the send() and recv()
