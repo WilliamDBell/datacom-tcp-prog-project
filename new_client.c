@@ -10,8 +10,11 @@
 
 int main(int argc, char const *argv[]) {
   unsigned short server_port;
-  int sckt;
+  int sckt, bytes_written;
+  long check_size;
+  char *buffer;
   const char * svr_ip = argv[1];
+  FILE * infptr;
 
   // // Get '.' Deliminated Server IP
   // char *  token = strtok(argv[1], ".");
@@ -28,6 +31,7 @@ int main(int argc, char const *argv[]) {
   //Create tcp socket using socket
   if((sckt = socket(PF_INET, SOCK_STREAM, 0)) < 0){
     printf("Socket Creation Failed");
+    exit(1);
   }
 
   // Declare socket address for server
@@ -40,11 +44,29 @@ int main(int argc, char const *argv[]) {
   // Make a Connection to the server
   if(connect(sckt,(struct sockaddr *) &server_address, sizeof(struct sockaddr_in)) < 0) {
     printf("There was an error when trying to connect with the server.\n %s \n", strerror(errno));
+    exit(1);
   }
 
-  // Communicate using the send() and recv()
+  // Open file to send
+  if((infptr = fopen(argv[3], "r")) != NULL){
+    printf("There was an error when trying to open the file to be sent.\n %s \n", strerror(errno));
+    exit(1);
+  }
 
-  // Close the connection
+  // Check if the file is empty
+  fseek (infptr, 0, SEEK_END);
+  check_size = ftell(infptr);
+  rewind(infptr); // reset file pointer to begining of file
+
+  // Send the file to the client
+  buffer = malloc(check_size * sizeof(char));
+  void *p = buffer;
+  while (check_size > 0) {
+    bytes_written = write(sckt, p, check_size);
+    check_size -= bytes_written;
+    p += bytes_written;
+  }
+
   close(sckt);
   exit(0);
 }
