@@ -12,7 +12,7 @@ int main(int argc, char const *argv[]) {
   unsigned short server_port;
   int sckt, bytes_written;
   long check_size;
-  char *buffer;
+  char *buffer, * to_format;
   const char * svr_ip = argv[1];
   FILE * infptr;
 
@@ -58,8 +58,17 @@ int main(int argc, char const *argv[]) {
   check_size = ftell(infptr);
   rewind(infptr); // reset file pointer to begining of file
 
+  // Send the file <to_format> byte to server
+  to_format = malloc(sizeof(char));
+  strcpy(to_format, argv[3]);
+  write(sckt, to_format, sizeof(to_format));
+
+  // Send the file size
+  write(sckt, &check_size, sizeof(check_size));
+
   // Send the file to the client
   buffer = malloc(check_size * sizeof(char));
+  fread(buffer, check_size, 1, infptr); // read file into the buffer
   void *p = buffer;
   while (check_size > 0) {
     bytes_written = write(sckt, p, check_size);
