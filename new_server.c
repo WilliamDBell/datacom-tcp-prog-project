@@ -17,6 +17,7 @@ int main(int argc, char const *argv[]){
   unsigned int clntLen;
   long * file_size;
   struct sockaddr_in clntAddr;
+  short out_number;
 
   printf("************************************\n");
   printf("***** Running Will's Server ********\n");
@@ -117,19 +118,45 @@ int main(int argc, char const *argv[]){
             write(outfile, &buff, sizeof(char));
           }
           else if(*to_format == '2' || *to_format == '3'){ // Translation from 0 to 1
-            
-
+            char * number = malloc(6*sizeof(char));
+            int i = 0;
+            recv(clntSckt, buff, sizeof(char), 0);
+            while(*buff != ','){
+              number[i] = *buff;
+              recv(clntSckt, buff, sizeof(char), 0);
+              i++;
+            }
+            out_number = atoi(number);
+            write(outfile, &out_number, sizeof(out_number));
           }
-
         }
-        // Write out the last number on the line
       }
       else if(*type == 0){ // Read from file format 2
         // Read one byte amount
         amount_str = malloc(sizeof(char));
-        // fread(amount_str, 1, 1, infptr);
+        recv(clntSckt, amount_str, sizeof(char), 0);
         amount = (int) amount_str;
-
+        if(*to_format == '0' || *to_format == '2') { // No Translation
+          write(outfile, amount_str, sizeof(char));
+        }
+        else if(*to_format == '1' || *to_format == '3') { // Translate amount 1 to 2
+          amount_str = malloc(3*sizeof(char));
+          sprintf(amount_str,"%d",amount);
+          write(outfile, amount_str, 3*sizeof(char));
+        }
+        for(int i = 0; i < amount; i++){
+          // Write the units to the outfile
+          if(*to_format == '0' || *to_format == '2') { // No Translation
+            recv(clntSckt, &out_number, sizeof(out_number), 0);
+            write(outfile, &out_number, sizeof(out_number));
+          }
+          else if(*to_format == '1' || *to_format == '3') { // Translate amount 1 to 2
+              recv(clntSckt, &out_number, sizeof(out_number), 0);
+              buff = (char *) malloc(6* sizeof(char));
+              sprintf(buff, "%d", out_number);
+              write(outfile, buff, strlen(buff));
+          }
+        }
       }
       else{
         printf("Improper file format given");
