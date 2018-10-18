@@ -12,7 +12,7 @@ int main(int argc, char const *argv[]) {
   unsigned short server_port;
   int sckt, bytes_written;
   long check_size;
-  char *buffer, * to_format;
+  char *buffer, * to_format, * out_file_name;
   const char * svr_ip = argv[1];
   FILE * infptr;
 
@@ -65,6 +65,11 @@ int main(int argc, char const *argv[]) {
 
   // Send the file size
   write(sckt, &check_size, sizeof(check_size));
+
+  // Send the file name
+  out_file_name = malloc(100 * sizeof(char));
+  strcpy(out_file_name, argv[5]);
+  write(sckt, out_file_name, sizeof(out_file_name));
 
   // Send the file to the client
   buffer = malloc(check_size * sizeof(char));
