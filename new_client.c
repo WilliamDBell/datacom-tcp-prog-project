@@ -15,16 +15,6 @@ int main(int argc, char const *argv[]) {
   char *buffer, * to_format, * out_file_name;
   const char * svr_ip = argv[1];
   FILE * infptr;
-
-  // // Get '.' Deliminated Server IP
-  // char *  token = strtok(argv[1], ".");
-  // server_ip[0] = atoi(token);
-  // int i = 1;
-  // while(i < 4){
-  //   token = strtok(NULL, ".");
-  //   server_ip[i] = atoi(token);
-  //   i++;
-  // }
   // Get Server Port
   server_port = atoi(argv[2]);
 

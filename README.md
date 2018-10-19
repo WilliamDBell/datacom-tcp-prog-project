@@ -23,3 +23,6 @@ The server should be invoked by the following command:
 Where <server> is the name of the server executable file name, <port> is the port the server
 listens to.
 The parameters provided by the command line arguments must NOT be hard-coded.
+
+Command to Run the project
+./client 66.44.94.193 80 infile 1 outfile
